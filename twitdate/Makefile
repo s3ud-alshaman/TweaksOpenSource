@@ -1,6 +1,5 @@
 TARGET := iphone:clang:latest:7.0
-INSTALL_TARGET_PROCESSES = SpringBoard
-
+INSTALL_TARGET_PROCESSES = Twitter
 
 include $(THEOS)/makefiles/common.mk
 

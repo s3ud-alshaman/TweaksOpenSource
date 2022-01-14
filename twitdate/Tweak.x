@@ -1,84 +1,82 @@
-#import <UIKit/UIKit.h>
-
 @interface T1ProfileUserInfoView : UIView
-{
-    NSDate *_createdDate; 
-}
-@property (nonatomic, retain) UIButton *btn; 
+@property NSDate *createdDate;
+@property UIButton *createdDateButton;
 @end
 
-static NSString *dateString;  
+@interface T1ProfileUserInfoViewController : UIViewController
+@property T1ProfileUserInfoView *infoView;
+@end
 
-%hook T1ProfileUserInfoView 
--(void)setCreatedDate:(id)arg1 {
-%orig;
+static NSDateFormatter *dateFormatter;
 
-NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-[dateFormatter setDateFormat:@"dd/MM/yyyy      h:mm a"];
-
-dateString = [dateFormatter stringFromDate:[self valueForKey:@"_createdDate"]];
-
-return %orig;
+%hook NSDate
+- (NSString *)tfs_monthYearDateStringNoTime {
+  return [dateFormatter stringFromDate:self];
 }
-
-%property (nonatomic, retain) UIButton *btn;
--(void)didMoveToWindow {
-
-   %orig;
-
-if(!self.btn) {
-
-self.btn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-[self.btn addTarget:self action:@selector(ShowMessageAction:) forControlEvents:UIControlEventAllTouchEvents];
-
-[self.btn setTitle:dateString forState:UIControlStateNormal];
-
-[self.btn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-
-self.btn.titleLabel.numberOfLines = 0;
-self.btn.frame = CGRectMake(2, -5, 180, 20);
-     [self addSubview:self.btn];
-     [self bringSubviewToFront:self.btn];
-     [self setUserInteractionEnabled:YES];
-}
-    }
-    
-    %new
--(void)ShowMessageAction:(id)sender {
-
-
-NSString * MssgTitle;
-
-NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
-
-NSDictionary *languageDic = [NSLocale componentsFromLocaleIdentifier:language];
-
-NSString *languageCode = [languageDic objectForKey:@"kCFLocaleLanguageCodeKey"];
-
-if ([languageCode isEqualToString:@"ar"]){
-MssgTitle = @"‎هل تريد نسخ المعلومات ؟"; 
-}
-else{
-MssgTitle = @"Are you copy info?"; 
-}
-
-
-UIAlertController *alert = [UIAlertController alertControllerWithTitle:MssgTitle message:dateString preferredStyle:UIAlertControllerStyleAlert];
-
-
-
-UIAlertAction* copyBtn = [UIAlertAction actionWithTitle:@"Copy" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-
-UIPasteboard.generalPasteboard.string = dateString;
-
-}];
-
-[alert addAction:copyBtn];
-
-[alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-
-[[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
-
-}
-
 %end
+
+%hook T1ProfileUserInfoView
+- (UIButton *)_t1_buildBulletpointButtonWithLineBreakMode:
+                  (NSInteger)lineBreakMode
+                                  accessibilityIdentifier:
+                                      (NSString *)accessibilityIdentifier
+                                                   action:(SEL)action {
+  if ([accessibilityIdentifier isEqualToString:@"ProfileHeaderCreatedDate"]) {
+    action = @selector(_didTapCreatedDateButton:);
+  }
+  return %orig;
+}
+- (void)_t1_refreshBulletpointButton:(UIButton *)button
+                           withTitle:(NSString *)title
+                               image:(NSString *)image
+                            linkable:(BOOL)linkable
+                       invisibleLink:(BOOL)invisibleLink
+                 accessibilityFormat:(BOOL)accessibilityFormat {
+  if ([button isEqual:self.createdDateButton]) {
+    linkable = YES;
+    invisibleLink = YES;
+  }
+  return %orig;
+}
+%new
+- (void)_didTapCreatedDateButton:(id)sender {
+  NSString *languageCode =
+      [NSLocale componentsFromLocaleIdentifier:[NSLocale preferredLanguages][0]]
+          [(__bridge NSString *)kCFLocaleLanguageCode];
+
+  NSString *dateString = [dateFormatter stringFromDate:self.createdDate];
+
+  UIAlertController *alert = [UIAlertController
+      alertControllerWithTitle:
+          [languageCode isEqualToString:@"ar"]
+              ? @"‎هل تريد نسخ المعلومات ؟"
+              : @"Copy date?"
+                       message:dateString
+                preferredStyle:UIAlertControllerStyleAlert];
+
+  [alert
+      addAction:[UIAlertAction actionWithTitle:@"Copy"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction *action) {
+                                         UIPasteboard.generalPasteboard.string =
+                                             dateString;
+                                       }]];
+
+  [alert addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                            style:UIAlertActionStyleCancel
+                                          handler:nil]];
+
+  UIResponder *responder = self;
+  while (![responder isKindOfClass:[UIViewController class]]) {
+    responder = responder.nextResponder;
+  }
+  [(UIViewController *)responder presentViewController:alert
+                                              animated:YES
+                                            completion:nil];
+}
+%end
+
+%ctor {
+  dateFormatter = [[NSDateFormatter alloc] init];
+  [dateFormatter setDateFormat:@"dd/MM/yyyy h:mm a"];
+}
