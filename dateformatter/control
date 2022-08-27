@@ -1,0 +1,9 @@
+Package: com.alshaman.dateformatter
+Name: DateFormatter
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: Change date format on lock screen
+Maintainer: Saud Alshaman
+Author: Saud Alshaman
+Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5000)
