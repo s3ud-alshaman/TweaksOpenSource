@@ -5,7 +5,7 @@
 
 ![Before](https://github.com/s3ud-alshaman/TweaksOpenSource/blob/main/dateformatter/1.PNG)
 
-![After](https://github.com/s3ud-alshaman/TweaksOpenSource/blob/main/dateformatter/1.PNG)
+![After](https://github.com/s3ud-alshaman/TweaksOpenSource/blob/main/dateformatter/2.PNG)
 
 
 Soon Available on [BigBoss](http://apt.thebigboss.org/repofiles/cydia/)
