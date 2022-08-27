@@ -14,10 +14,9 @@
 -(void)openSource{
 
 [[UIApplication sharedApplication]
-openURL:[NSURL URLWithString:@"https://github.com/s3ud-alshaman"]
+openURL:[NSURL URLWithString:@"https://github.com/s3ud-alshaman/TweaksOpenSource/tree/main/dateformatter"]
 options:@{}
 completionHandler:nil];
 }
-
 
 @end
