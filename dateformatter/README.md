@@ -8,7 +8,8 @@
 ![After](https://github.com/s3ud-alshaman/TweaksOpenSource/blob/main/dateformatter/2.PNG)
 
 
-Soon Available on [BigBoss](http://apt.thebigboss.org/repofiles/cydia/)
+Available on [BigBoss](https://moreinfo.thebigboss.org/moreinfo/depiction.php?file=dateformatterDp)
 
 ### Tweak Description
-Change date format on lock screen, I tested it on iOS  13 & 14 
+Change date format on lock screen
+I tested on iOS  13 & 14 
